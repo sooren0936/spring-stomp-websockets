@@ -1,13 +1,11 @@
 package com.example.springstompwebsockets;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+/**
+ * @author Suren Kalaychyan
+ */
 @SpringBootTest
-class SpringStompWebsocketsApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
+public class SpringStompWebsocketsApplicationTests {
 
 }
