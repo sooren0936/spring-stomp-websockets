@@ -37,16 +37,16 @@ public class GreetingControllerTest {
 
     final BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(1);
 
-    private StompFrameHandler prepareTestStompHandler() {
+    private StompFrameHandler prepareTestStompFrameHandler() {
         return new StompFrameHandler() {
 
             @Override
-            public Type getPayloadType(StompHeaders headers) {
+            public Type getPayloadType(final StompHeaders headers) {
                 return Greeting.class;
             }
 
             @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
+            public void handleFrame(final StompHeaders headers, final Object payload) {
                 System.out.println("Received message: " + payload);
                 blockingQueue.add(((Greeting) payload).getContent());
             }
@@ -59,8 +59,7 @@ public class GreetingControllerTest {
 
     @BeforeEach
     public void setup() {
-        this.webSocketStompClient = new WebSocketStompClient(new SockJsClient(
-                List.of(new WebSocketTransport(new StandardWebSocketClient()))));
+        this.webSocketStompClient = new WebSocketStompClient(new SockJsClient(List.of(new WebSocketTransport(new StandardWebSocketClient()))));
     }
 
     @Test
@@ -68,11 +67,11 @@ public class GreetingControllerTest {
         webSocketStompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
         final StompSession session = webSocketStompClient
-                .connect(prepareTestWsPath(), new StompSessionHandlerAdapter() {
-                })
-                .get(1, SECONDS);
-        session.subscribe("/topic/greetings", prepareTestStompHandler());
-        session.send("/app/hello", new HelloMessage("Mike"));
+            .connect(prepareTestWsPath(), new StompSessionHandlerAdapter() {
+            })
+            .get(1, SECONDS);
+        session.subscribe(String.format("/topic/greetings/%d", 1), prepareTestStompFrameHandler());
+        session.send(String.format("/app/hello/%d", 1), new HelloMessage("Mike"));
 
         assertEquals("Hello, Mike!", blockingQueue.poll(1, SECONDS));
     }
