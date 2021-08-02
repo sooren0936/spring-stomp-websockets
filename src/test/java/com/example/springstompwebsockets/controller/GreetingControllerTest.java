@@ -4,6 +4,7 @@ import com.example.springstompwebsockets.entity.Greeting;
 import com.example.springstompwebsockets.entity.HelloMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -29,6 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GreetingControllerTest {
+
+    @Autowired
+    private GreetingController greetingController;
 
     @LocalServerPort
     private Integer port;
@@ -74,5 +78,8 @@ public class GreetingControllerTest {
         session.send(String.format("/app/hello/%d", 1), new HelloMessage("Mike"));
 
         assertEquals("Hello, Mike!", blockingQueue.poll(1, SECONDS));
+
+        greetingController.updateGreeting();
+        System.out.println(blockingQueue.poll(1, SECONDS));
     }
 }
